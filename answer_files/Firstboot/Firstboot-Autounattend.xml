@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<unattend xmlns="urn:schemas-microsoft-com:unattend"
+  xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<settings pass="generalize">
+  <component name="Microsoft-Windows-PnpSysprep"
+    processorArchitecture="amd64"
+    publicKeyToken="31bf3856ad364e35"
+    language="neutral" versionScope="nonSxS">
+  <PersistAllDeviceInstalls>true</PersistAllDeviceInstalls>
+</component>
+    </settings>
+    <settings pass="specialize">
+      <component name="Microsoft-Windows-Deployment"
+        processorArchitecture="amd64"
+        publicKeyToken="31bf3856ad364e35"
+        language="neutral" versionScope="nonSxS">
+      <RunSynchronous>
+        <RunSynchronousCommand wcm:action="add">
+          <Description>Disable create user account</Description>
+          <Path>reg add HKLM\Software\Microsoft\Windows\CurrentVersion\Setup\OOBE /v UnattendCreatedUser /t REG_DWORD /d 1 /f</Path>
+          <Order>1</Order>
+        </RunSynchronousCommand>
+        <RunSynchronousCommand wcm:action="add">
+          <!-- This *MUST* be copied over before this is run! -->
+          <!-- This is usually done by 0-firstlogin.bat -->
+          <Description>Setup winrm again</Description>
+          <Path>cmd.exe /c C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -File C:/Windows/Temp/enable-winrm.ps1</Path>
+          <Order>10</Order>
+        </RunSynchronousCommand>
+        <!-- TODO - Fix this? -->
+        <!-- <RunSynchronousCommand wcm:action="add"> -->
+        <!--   <Description>Rearm / setup licensing</Description> -->
+        <!--   <Path>slmgr /rearm</Path> -->
+        <!--   <Order>30</Order> -->
+        <!-- </RunSynchronousCommand> -->
+      </RunSynchronous>
+    </component>
+    <component name="Microsoft-Windows-Shell-Setup"
+      processorArchitecture="amd64"
+      publicKeyToken="31bf3856ad364e35"
+      language="neutral" versionScope="nonSxS">
+    <RegisteredOwner>ProactiveLabs</RegisteredOwner>
+    <RegisteredOrganization>ProactiveLabs</RegisteredOrganization>
+    <TimeZone>AUS Eastern Standard Time</TimeZone>
+    <Computername>*</Computername>
+    <OOBE>
+      <HideEULAPage>true</HideEULAPage>
+      <NetworkLocation>Work</NetworkLocation>
+      <ProtectYourPC>2</ProtectYourPC>
+      <SkipUserOOBE>true</SkipUserOOBE>
+      <SkipMachineOOBE>true</SkipMachineOOBE>
+      <HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
+      <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
+      <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+    </OOBE>
+  </component>
+</settings>
+<settings pass="oobeSystem">
+  <component name="Microsoft-Windows-International-Core"
+    processorArchitecture="amd64"
+    publicKeyToken="31bf3856ad364e35"
+    language="neutral" versionScope="nonSxS">
+  <InputLocale>0c09:00000409</InputLocale>
+  <SystemLocale>en-US</SystemLocale>
+  <UILanguage>en-US</UILanguage>
+  <UserLocale>en-AU</UserLocale>
+</component>
+    </settings>
+  </unattend>

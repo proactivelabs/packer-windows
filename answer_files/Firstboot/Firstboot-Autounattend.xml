@@ -30,10 +30,10 @@
         </RunSynchronousCommand>
         <!-- TODO - Fix this? -->
         <!-- <RunSynchronousCommand wcm:action="add"> -->
-        <!--   <Description>Rearm / setup licensing</Description> -->
-        <!--   <Path>slmgr /rearm</Path> -->
-        <!--   <Order>30</Order> -->
-        <!-- </RunSynchronousCommand> -->
+          <!--   <Description>Rearm / setup licensing</Description> -->
+          <!--   <Path>slmgr /rearm</Path> -->
+          <!--   <Order>30</Order> -->
+          <!-- </RunSynchronousCommand> -->
       </RunSynchronous>
     </component>
     <component name="Microsoft-Windows-Shell-Setup"

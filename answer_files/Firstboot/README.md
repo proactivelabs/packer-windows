@@ -3,8 +3,7 @@
 This is used to sysprep the host on first boot after packaging.
 See ../../README for more info
 
-Ultimately, we need three things:
+Ultimately, we need two things:
 
-* don't prompt to create a new user (we have vagrant)
-* Re-license the machine (for 90 days)
+* Don't prompt to create a new user (we have vagrant)
 * Re-enable winrm

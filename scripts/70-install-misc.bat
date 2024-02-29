@@ -9,3 +9,7 @@ powershell -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "Set-Ex
 
 REM Install spice-agent
 choco install spice-agent -y
+
+REM Create file indicating system is not yet sysprepped
+REM This is deleted using the Firstboot-Autounattend file
+copy C:\windows\system32\cmd.exe C:\not-yet-finished

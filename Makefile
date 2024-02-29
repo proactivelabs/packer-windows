@@ -27,13 +27,32 @@ define test_ga
 		N=$$RANDOM
 		echo "Check if host is alive / guest agent is listening"
 		echo '{"execute":"guest-ping"}' | nc -U ${$@_socket_path} -W 1 >/dev/null
+
 		echo "Get OS info"
 		echo '{"execute":"guest-get-osinfo"}' | nc -U ${$@_socket_path} -W 1 | jq -r ".return"
+
 		echo "Checking if expected os - Should be ${$@_expected_os}"
 		echo '{"execute":"guest-get-osinfo"}' | nc -U ${$@_socket_path} -W 1 | jq .return.version | grep -i ${$@_expected_os}
+
 		echo "Checking if guest returns nonce correctly"
 		echo "{'execute':'guest-sync', 'arguments':{'id':$$N}}" | nc -U ${$@_socket_path}  -W 1 | grep $$N | jq ".return"
-		#
+
+		# Finally, check if our file-based lock has been deleted
+		# This catches the edge case of windeploy.exe not yet running (i.e. super early boot)
+		# But is clearly not ready as it hasn't ran sysprep yet!
+		# Note there can still be time *after* the specialize phase has ran, but the box is almost immediately
+		# going to reboot. There's probably a good fix for this, however we just care if the machine
+		# has sensibly passed sysprep
+		echo "Checking for lock file presence (C:/not-yet-finished)"
+		pid=$$(echo '{"execute":"guest-exec", "arguments": {"path": "cmd.exe", "capture-output":true, "arg": ["/c", "dir", "C:\\not*"]}}' | nc -U ${$@_socket_path} -W 1 | jq .return.pid )
+		# We need to sleep to ensure it finishes running
+		sleep 2
+		res=$$(echo "{'execute': 'guest-exec-status', 'arguments': { 'pid': $$pid }}" |  nc -U ${$@_socket_path} -W 1 | jq -r '.return."out-data"'  | base64 -d | grep -ci not-yet-finished || true)
+		if [ $$res -ge 1 ]; then
+			echo "Lock file in place - sysprep has not yet ran?"
+			exit 1
+		fi
+
 		# Figure out if windeploy.exe is running, fail if it is
 		echo "Check if windeploy.exe is running (This is an indication sysprep has not finished)"
 		pid=$$(echo '{"execute":"guest-exec", "arguments": {"path": "tasklist.exe", "capture-output":true, "arg": []}}' | nc -U ${$@_socket_path} -W 1 | jq .return.pid)
@@ -77,7 +96,7 @@ output-windows_10/packer-win10_22h2:
 >packer build -var=headless=$(HEADLESS) win10_22h2.pkr.hcl
 output-windows_11/packer-win11_23h2:
 >packer build -var=headless=$(HEADLESS) win11_23h2.pkr.hcl
-output-windows_2019/packer-win201:
+output-windows_2019/packer-win2019:
 >packer build -var=headless=$(HEADLESS) win2019.pkr.hcl
 output-windows_2022/packer-win2022:
 >packer build -var=headless=$(HEADLESS) win2022.pkr.hcl

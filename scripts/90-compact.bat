@@ -16,3 +16,7 @@ sdelete.exe /accepteula -z c:
 
 REM compaction finished
 REM The box will now be sysprepped and will be ready to go shortly
+
+REM Directory listing of C:/
+REM You want to make sure C:\not-yet-finished is in output here
+dir C:\

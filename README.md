@@ -82,3 +82,17 @@ These images will sysprep on first boot, this can be disabled by specifying the 
 ```bash
 packer build -var=shutdown_command="shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\""
 ```
+
+### Checking host prepared-ness
+
+A file based lock is implemented, which creates the text
+file `C:/not-yet-finished` in `70-install-misc.bat`, and is
+deleted once the `Firstboot-Autounattend.xml` has finished
+running (i.e. post sysprep). A simple check has been implemented
+in the `Makefile` to check for this condition.
+
+It is recommended to check for `C:/not-yet-finished` file,
+if it is not present, the host has finished sysprepping
+and is ready to be used (although depending on time, you *could*
+hit a situation where sysprep has run the specialise phase,
+but has not yet done one final reboot. ymmv)
